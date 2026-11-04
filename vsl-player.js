@@ -35,7 +35,7 @@
   if (!document.getElementById('vsl-player-style')) {
     var style = document.createElement('style');
     style.id = 'vsl-player-style';
-    style.innerHTML = '@keyframes vslPulse{0%,100%{transform:translateX(-50%) scale(1);box-shadow:0 4px 15px rgba(220,38,38,0.5);}50%{transform:translateX(-50%) scale(1.05);box-shadow:0 8px 30px rgba(220,38,38,0.9);}}';
+    style.innerHTML = '@keyframes vslPulse{0%,100%{transform:translate(-50%,-50%) scale(1);box-shadow:0 6px 20px rgba(220,38,38,0.5);}50%{transform:translate(-50%,-50%) scale(1.06);box-shadow:0 12px 35px rgba(220,38,38,0.9);}}';
     document.head.appendChild(style);
   }
 
@@ -87,15 +87,15 @@
     // Unmute Banner (in English, high-conversion VSL copy)
     var unmuteBanner = document.createElement('div');
     unmuteBanner.style.position = 'absolute';
-    unmuteBanner.style.top = '16px';
+    unmuteBanner.style.top = '50%';
     unmuteBanner.style.left = '50%';
-    unmuteBanner.style.transform = 'translateX(-50%)';
+    unmuteBanner.style.transform = 'translate(-50%, -50%)';
     unmuteBanner.style.zIndex = '30';
     unmuteBanner.style.backgroundColor = '#dc2626';
     unmuteBanner.style.color = '#fff';
-    unmuteBanner.style.padding = '12px 24px';
+    unmuteBanner.style.padding = '14px 28px';
     unmuteBanner.style.borderRadius = '9999px';
-    unmuteBanner.style.fontSize = '14px';
+    unmuteBanner.style.fontSize = '15px';
     unmuteBanner.style.fontWeight = '800';
     unmuteBanner.style.letterSpacing = '0.04em';
     unmuteBanner.style.textTransform = 'uppercase';
@@ -104,7 +104,7 @@
     unmuteBanner.style.gap = '10px';
     unmuteBanner.style.cursor = 'pointer';
     unmuteBanner.style.animation = 'vslPulse 1.8s infinite ease-in-out';
-    unmuteBanner.innerHTML = '<span style="font-size:20px;">🔊</span> <span>CLICK TO LISTEN!</span>';
+    unmuteBanner.innerHTML = '<span style="font-size:22px;">🔊</span> <span>CLICK TO LISTEN!</span>';
 
     // Minimalist Full-Width Video Progress Bar ONLY (no play button, no time, no volume, no fullscreen)
     var progressContainer = document.createElement('div');
