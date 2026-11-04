@@ -1,8 +1,20 @@
 # Kyle Rescuer - Complete Website Mirror (All Versions & Pages)
 
-Mirror completo, estático e independente de **todas as páginas** do ecossistema **Kyle Rescuer** (`https://donate.kylerescuer.org`), incluindo todas as versões do funil de doação, landing pages, página de agradecimento, políticas institucionais e página de links oficial.
+Mirror completo, estático e independente de **todas as páginas** do ecossistema **Kyle Rescuer** (`https://donate.kylerescuer.org`), incluindo todas as versões do funil de doação, landing pages, página de agradecimento, políticas institucionais e a **VSL (Vídeo) totalmente hospedada e reproduzida localmente**.
 
 🔗 **Repositório GitHub**: [https://github.com/notfakelucas/kylerescuer](https://github.com/notfakelucas/kylerescuer)
+
+---
+
+## 🎬 VSL 100% Auto-hospedada (Self-Hosted)
+
+A página não depende mais de serviços externos (VTurb / ConverteAI) para rodar o vídeo.
+* **Arquivo de vídeo local:** `vsl-kylerescuer.mp4` (720p HD, ~26.6 MB)
+* **Player VSL personalizado:** `vsl-player.js`
+  * Autoplay inteligente com banner pulsante *"SEU VÍDEO JÁ COMEÇOU! CLIQUE PARA OUVIR"* (padrão de alta conversão de VSL).
+  * Ao clicar no vídeo, ativa o áudio e reinicia do início com som alto e nítido.
+  * Controles completos: Play/Pause, barra de progresso, volume e tela cheia.
+  * Fallback nativo em HTML5 nas tags `<video>` caso o JavaScript esteja desativado.
 
 ---
 
@@ -47,6 +59,9 @@ Mirror completo, estático e independente de **todas as páginas** do ecossistem
 ├── refund-policy/index.html     # Política de Reembolso
 ├── kylerescuer-links/index.html # Página de links (kylerescuer.org)
 │
+├── vsl-kylerescuer.mp4          # Vídeo da VSL (720p HD, 01:50)
+├── vsl-player.js                # Player VSL auto-hospedado com autoplay e un-mute
+│
 ├── _next/                       # Bundles Next.js
 │   └── static/
 │       ├── css/                 # Estilos Tailwind CSS compilados
@@ -64,7 +79,6 @@ Mirror completo, estático e independente de **todas as páginas** do ecossistem
 ├── candid.svg                   # Selo de transparência Candid / GuideStar
 ├── charity.png                  # Selo Charity Navigator
 ├── favicon.ico                  # Favicon original
-├── download_all.py              # Script automatizado de download e sincronização
 └── robots.txt                   # Arquivo de robots
 ```
 
@@ -80,31 +94,13 @@ python3 -m http.server 8000
 ```
 Navegue para:
 - [http://localhost:8000](http://localhost:8000) (Home)
-- [http://localhost:8000/v2/](http://localhost:8000/v2/)
-- [http://localhost:8000/v3/](http://localhost:8000/v3/)
-- [http://localhost:8000/v4/](http://localhost:8000/v4/)
-- [http://localhost:8000/v5/](http://localhost:8000/v5/)
-- [http://localhost:8000/v6/](http://localhost:8000/v6/)
-- [http://localhost:8000/v7/](http://localhost:8000/v7/)
-- [http://localhost:8000/v8/](http://localhost:8000/v8/)
-- [http://localhost:8000/thank-you/](http://localhost:8000/thank-you/)
-- [http://localhost:8000/kylerescuer-links/](http://localhost:8000/kylerescuer-links/)
-
-### Com Node.js
-```bash
-npx serve .
-```
-
-### Com PHP
-```bash
-php -S localhost:8000
-```
+- [http://localhost:8000/v5/](http://localhost:8000/v5/) (Versão 5)
 
 ---
 
 ## 🌐 Deploy Estático
 
-Compatível com deploy em:
+Compatível com deploy imediato em:
 - **GitHub Pages**
 - **Vercel**
 - **Netlify**
