@@ -104,7 +104,7 @@
     unmuteBanner.style.gap = '10px';
     unmuteBanner.style.cursor = 'pointer';
     unmuteBanner.style.animation = 'vslPulse 1.8s infinite ease-in-out';
-    unmuteBanner.innerHTML = '<span style="font-size:20px;">🔊</span> <span>YOUR VIDEO HAS STARTED! CLICK TO LISTEN</span>';
+    unmuteBanner.innerHTML = '<span style="font-size:20px;">🔊</span> <span>CLICK TO LISTEN!</span>';
 
     // Minimalist Full-Width Video Progress Bar ONLY (no play button, no time, no volume, no fullscreen)
     var progressContainer = document.createElement('div');
