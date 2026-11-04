@@ -63,3 +63,4 @@ for fpath in html_files:
     print(f"Updated {fpath}")
 
 print("All HTML files updated successfully!")
+

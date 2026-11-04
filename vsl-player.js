@@ -1,17 +1,15 @@
 /**
  * Self-hosted VSL Player for Kyle Rescuer
- * High-conversion video player with smart autoplay, click-to-unmute, and full controls.
+ * High-conversion video player with guaranteed instant autoplay, unmute banner, and full controls.
  */
 (function() {
   'use strict';
 
-  // Determine correct video and poster URLs regardless of hosting path (root, subfolder, GitHub Pages, or file://)
   function getBasePrefix() {
     var loc = window.location;
     if (loc.protocol === 'file:') {
       return '';
     }
-    // Check if we are inside a sub-directory like /v2/, /v5/, etc.
     var path = loc.pathname;
     if (path.match(/\/(v\d+|thank-you|privacy-policy|terms-and-conditions|cookie-policy|donation-policy|refund-policy)\/?$/)) {
       return '../';
@@ -21,7 +19,6 @@
 
   function resolvePath(relativePath) {
     if (relativePath.startsWith('/') && !window.location.protocol.startsWith('file')) {
-      // Find repo base if hosted on github pages (e.g. /kylerescuer/)
       var parts = window.location.pathname.split('/').filter(Boolean);
       if (parts.length > 0 && parts[0] === 'kylerescuer') {
         return '/kylerescuer' + relativePath;
@@ -34,6 +31,14 @@
   var VIDEO_SRC = resolvePath('/vsl-kylerescuer.mp4');
   var POSTER_SRC = resolvePath('/caio/vsl-poster.webp');
 
+  // Inject keyframe animation for unmute banner
+  if (!document.getElementById('vsl-player-style')) {
+    var style = document.createElement('style');
+    style.id = 'vsl-player-style';
+    style.innerHTML = '@keyframes vslPulse{0%,100%{transform:translateX(-50%) scale(1);box-shadow:0 4px 15px rgba(220,38,38,0.5);}50%{transform:translateX(-50%) scale(1.05);box-shadow:0 8px 30px rgba(220,38,38,0.9);}}';
+    document.head.appendChild(style);
+  }
+
   // Register mock smartplayer global
   window.smartplayer = window.smartplayer || {
     instances: {},
@@ -42,6 +47,9 @@
   };
 
   function createPlayerUI(container, videoSrc, posterSrc) {
+    // Check if video already exists inside placeholder (from SSR/HTML)
+    var existingVideo = container.querySelector('video');
+
     container.innerHTML = '';
     container.style.position = 'relative';
     container.style.width = '100%';
@@ -59,55 +67,64 @@
     wrapper.style.alignItems = 'center';
     wrapper.style.justifyContent = 'center';
 
-    var video = document.createElement('video');
+    var video = existingVideo || document.createElement('video');
     video.src = videoSrc;
     video.poster = posterSrc;
+    // Guaranteed attributes for mobile and desktop autoplay
+    video.setAttribute('autoplay', '');
+    video.setAttribute('muted', '');
     video.setAttribute('playsinline', '');
     video.setAttribute('webkit-playsinline', '');
+    video.setAttribute('x5-playsinline', '');
+    video.autoplay = true;
+    video.muted = true;
+    video.defaultMuted = true;
+    video.loop = true;
     video.preload = 'auto';
     video.style.width = '100%';
     video.style.height = '100%';
     video.style.objectFit = 'cover';
     video.style.display = 'block';
 
-    // Unmute Banner (Pulsing sound toggle)
+    // Unmute Banner (High-conversion banner)
     var unmuteBanner = document.createElement('div');
     unmuteBanner.style.position = 'absolute';
     unmuteBanner.style.top = '16px';
     unmuteBanner.style.left = '50%';
     unmuteBanner.style.transform = 'translateX(-50%)';
     unmuteBanner.style.zIndex = '30';
-    unmuteBanner.style.backgroundColor = 'rgba(220, 38, 38, 0.95)';
+    unmuteBanner.style.backgroundColor = '#dc2626';
     unmuteBanner.style.color = '#fff';
-    unmuteBanner.style.padding = '10px 20px';
+    unmuteBanner.style.padding = '12px 24px';
     unmuteBanner.style.borderRadius = '9999px';
     unmuteBanner.style.fontSize = '14px';
-    unmuteBanner.style.fontWeight = 'bold';
-    unmuteBanner.style.boxShadow = '0 6px 20px rgba(0,0,0,0.35)';
-    unmuteBanner.style.display = 'none';
+    unmuteBanner.style.fontWeight = '800';
+    unmuteBanner.style.letterSpacing = '0.04em';
+    unmuteBanner.style.textTransform = 'uppercase';
+    unmuteBanner.style.display = 'flex';
     unmuteBanner.style.alignItems = 'center';
-    unmuteBanner.style.gap = '8px';
+    unmuteBanner.style.gap = '10px';
     unmuteBanner.style.cursor = 'pointer';
-    unmuteBanner.style.transition = 'transform 0.2s ease, opacity 0.2s ease';
-    unmuteBanner.innerHTML = '<span style="font-size:18px;">🔊</span> <span>SEU VÍDEO JÁ COMEÇOU! CLIQUE PARA OUVIR</span>';
+    unmuteBanner.style.animation = 'vslPulse 1.8s infinite ease-in-out';
+    unmuteBanner.innerHTML = '<span style="font-size:20px;">🔊</span> <span>SEU VÍDEO JÁ COMEÇOU! CLIQUE PARA OUVIR</span>';
 
-    // Big Center Play Button (for when video is paused)
+    // Big Center Play Button
     var playButton = document.createElement('div');
     playButton.style.position = 'absolute';
     playButton.style.top = '50%';
     playButton.style.left = '50%';
     playButton.style.transform = 'translate(-50%, -50%)';
-    playButton.style.width = '74px';
-    playButton.style.height = '74px';
-    playButton.style.backgroundColor = 'rgba(220, 38, 38, 0.92)';
+    playButton.style.width = '76px';
+    playButton.style.height = '76px';
+    playButton.style.backgroundColor = 'rgba(220, 38, 38, 0.95)';
     playButton.style.borderRadius = '50%';
-    playButton.style.display = 'flex';
+    playButton.style.display = 'none';
     playButton.style.alignItems = 'center';
     playButton.style.justifyContent = 'center';
     playButton.style.zIndex = '20';
     playButton.style.boxShadow = '0 10px 30px rgba(220, 38, 38, 0.6), 0 0 0 10px rgba(220, 38, 38, 0.2)';
     playButton.style.transition = 'transform 0.2s ease, opacity 0.2s ease';
-    playButton.innerHTML = '<svg width="32" height="32" viewBox="0 0 24 24" fill="#ffffff" style="margin-left:4px;"><path d="M8 5v14l11-7z"/></svg>';
+    playButton.innerHTML = '<svg width="34" height="34" viewBox="0 0 24 24" fill="#ffffff" style="margin-left:4px;"><path d="M8 5v14l11-7z"/></svg>';
 
     // Controls Bar (bottom)
     var controlsBar = document.createElement('div');
@@ -125,16 +142,14 @@
     controlsBar.style.opacity = '0';
     controlsBar.style.transition = 'opacity 0.25s ease';
 
-    // Play/Pause icon button
     var miniPlayBtn = document.createElement('button');
     miniPlayBtn.style.background = 'none';
     miniPlayBtn.style.border = 'none';
     miniPlayBtn.style.color = '#fff';
     miniPlayBtn.style.cursor = 'pointer';
     miniPlayBtn.style.padding = '4px';
-    miniPlayBtn.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="#fff"><path d="M8 5v14l11-7z"/></svg>';
+    miniPlayBtn.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="#fff"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>';
 
-    // Progress container
     var progressContainer = document.createElement('div');
     progressContainer.style.flex = '1';
     progressContainer.style.height = '6px';
@@ -153,23 +168,20 @@
     progressBar.style.borderRadius = '3px';
     progressContainer.appendChild(progressBar);
 
-    // Time text
     var timeDisplay = document.createElement('span');
     timeDisplay.style.color = '#fff';
     timeDisplay.style.fontSize = '12px';
     timeDisplay.style.fontFamily = 'monospace';
     timeDisplay.innerText = '0:00 / 1:50';
 
-    // Volume button
     var volumeBtn = document.createElement('button');
     volumeBtn.style.background = 'none';
     volumeBtn.style.border = 'none';
     volumeBtn.style.color = '#fff';
     volumeBtn.style.cursor = 'pointer';
     volumeBtn.style.padding = '4px';
-    volumeBtn.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="#fff"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg>';
+    volumeBtn.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="#fff"><path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/></svg>';
 
-    // Fullscreen button
     var fsBtn = document.createElement('button');
     fsBtn.style.background = 'none';
     fsBtn.style.border = 'none';
@@ -190,7 +202,6 @@
     wrapper.appendChild(controlsBar);
     container.appendChild(wrapper);
 
-    // Helpers
     function formatTime(s) {
       if (isNaN(s)) return '0:00';
       var m = Math.floor(s / 60);
@@ -214,7 +225,6 @@
       }
     }
 
-    // Toggle Play/Pause
     function togglePlay(e) {
       if (e) e.stopPropagation();
       if (video.paused) {
@@ -229,20 +239,19 @@
       updateIcons();
     }
 
-    // Unmute action
     function handleUnmute(e) {
       if (e) e.stopPropagation();
       video.muted = false;
       video.volume = 1;
-      video.currentTime = 0; // Restart from start with full sound
+      video.currentTime = 0; // Restart from 00:00 with full audio
       video.play();
       unmuteBanner.style.display = 'none';
       updateIcons();
     }
 
-    // Event listeners
+    // Click on player
     container.addEventListener('click', function(e) {
-      if (video.muted && !video.paused) {
+      if (video.muted) {
         handleUnmute(e);
       } else {
         togglePlay(e);
@@ -293,26 +302,39 @@
       if (!video.paused) controlsBar.style.opacity = '0';
     });
 
-    // Attempt smart muted autoplay (industry-standard VSL pattern)
-    video.muted = true;
-    var playPromise = video.play();
-    if (playPromise !== undefined) {
-      playPromise.then(function() {
-        // Autoplay started muted - show unmute banner
-        unmuteBanner.style.display = 'flex';
-        updateIcons();
-      }).catch(function() {
-        // Autoplay blocked by browser - show big play button
-        video.muted = false;
-        playButton.style.display = 'flex';
-        updateIcons();
-      });
+    // Guaranteed Autoplay trigger
+    function startAutoplay() {
+      video.muted = true;
+      video.defaultMuted = true;
+      var playPromise = video.play();
+      if (playPromise !== undefined) {
+        playPromise.then(function() {
+          unmuteBanner.style.display = 'flex';
+          playButton.style.display = 'none';
+          updateIcons();
+        }).catch(function() {
+          // If strictly blocked, attach one-touch global listener to play instantly
+          playButton.style.display = 'flex';
+          updateIcons();
+          var oneTouch = function() {
+            video.play();
+            window.removeEventListener('click', oneTouch);
+            window.removeEventListener('touchstart', oneTouch);
+          };
+          window.addEventListener('click', oneTouch, { once: true });
+          window.addEventListener('touchstart', oneTouch, { once: true });
+        });
+      }
     }
+
+    startAutoplay();
+    video.addEventListener('canplay', function() {
+      if (video.paused) startAutoplay();
+    }, { once: true });
 
     window.smartplayer[container.id || 'main'] = video;
   }
 
-  // Custom Element implementation: <vturb-smartplayer>
   class VTurbSmartPlayerElement extends HTMLElement {
     connectedCallback() {
       createPlayerUI(this, VIDEO_SRC, POSTER_SRC);
@@ -323,13 +345,19 @@
     customElements.define('vturb-smartplayer', VTurbSmartPlayerElement);
   }
 
-  // Also auto-initialize any container if already in DOM
-  document.addEventListener('DOMContentLoaded', function() {
+  // Also auto-initialize immediately or on DOM ready
+  function initAll() {
     var players = document.querySelectorAll('vturb-smartplayer');
     players.forEach(function(p) {
       if (!p.querySelector('video')) {
         createPlayerUI(p, VIDEO_SRC, POSTER_SRC);
       }
     });
-  });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initAll);
+  } else {
+    initAll();
+  }
 })();
