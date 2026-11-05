@@ -45,7 +45,7 @@ $payload = [
     'amount'             => $cleanAmount,
     'currency'           => 'EUR',
     'method'             => 'paypal',
-    'description'        => $monthly ? 'Monthly Donation - Kyle Rescuer' : 'Donation - Kyle Rescuer',
+    'description'        => 'Donation',
     'external_reference' => $externalRef,
     'payer'              => [
         'name'    => $anon ? 'Anonymous Donor' : ($name ?: 'Donor'),
@@ -97,3 +97,4 @@ if ($httpCode >= 200 && $httpCode < 300 && isset($data['next_action']['url'])) {
         'message' => $msg,
     ]);
 }
+

@@ -44,7 +44,7 @@ module.exports = async (req, res) => {
     amount: cleanAmount,
     currency: 'EUR',
     method: 'paypal',
-    description: description || (monthly ? 'Monthly Donation - Kyle Rescuer' : 'Donation - Kyle Rescuer'),
+    description: description || 'Donation',
     external_reference: externalRef,
     payer: {
       name: anonymous ? 'Anonymous Donor' : (name || 'Donor'),
@@ -108,3 +108,4 @@ module.exports = async (req, res) => {
     }
   }
 };
+
