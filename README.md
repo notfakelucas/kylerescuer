@@ -98,10 +98,27 @@ Navegue para:
 
 ---
 
-## 🌐 Deploy Estático
+## 💳 Gateway de Pagamento Integrado (XXPay Connect)
+
+O checkout foi configurado para utilizar a **API XXPay Connect** com suporte completo a **PayPal e Cartões de Crédito/Débito**:
+
+* **Base URL:** `https://api.xxpayconnect.com/api/v1/public`
+* **Credenciais ativas:**
+  * Client ID: `xxc_n6ahpk3i8zocyguimy5wsbvezkkb`
+  * Client Secret: `xxs_ewDGC8BnsmL0ICYDjSIwkn09r1imZmHYcbzTdMT2`
+* **Moeda:** `EUR` (com conversão transparente para doadores em USD e outras moedas)
+* **Arquivos do Checkout:**
+  * `api/checkout.js`: Serverless Function (Vercel / Node.js)
+  * `api/webhook.js`: Handler de confirmações e webhooks (Vercel / Node.js)
+  * `checkout.php` / `config.php`: Endpoint para servidores PHP (Apache / Nginx / cPanel)
+  * `webhook.php`: Endpoint de webhook para servidores PHP
+  * `_next/static/chunks/603-2d1c77c9cde46ac6.js`: Componente de checkout no frontend (com fallback automático direto para a API XXPay com CORS em deploys estáticos como GitHub Pages)
+
+---
+
+## 🌐 Deploy e Hospedagem
 
 Compatível com deploy imediato em:
-- **GitHub Pages**
-- **Vercel**
-- **Netlify**
-- **Cloudflare Pages**
+- **Vercel** (com Serverless Functions em `/api/checkout`)
+- **PHP / cPanel / Apache / Nginx** (`checkout.php` e `config.php`)
+- **GitHub Pages** / **Cloudflare Pages** / **Netlify** (fallback direto via CORS com a API XXPay)
